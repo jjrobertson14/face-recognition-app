@@ -20,23 +20,43 @@ class App extends Component {
     this.state = {
       input: '',
       imageUrl: '',
+      box: {},
     }
   }
 
+  // method to calculate the dimensions and position of the face bounding box
+  calculateFaceLocation = (data) => {
+    const clarifaiFaceBox = data.outputs[0].data.regions[0].region_info.bounding_box;
+    const image = document.getElementById('input-image');
+    const width = Number(image.width);
+    const height = Number(image.height);
+    console.log(clarifaiFaceBox);
+    return {
+      leftCol: clarifaiFaceBox.left_col * width, // the percentage of width that the left side of the face bounding box is at
+      topRow: clarifaiFaceBox.top_row * height,
+      rightCol: width - (clarifaiFaceBox.right_col * width),
+      bottomRow: height - (clarifaiFaceBox.bottom_row * height)
+    };
+  }
+
+  //method to set a face bounding box property on the state
+  displayFaceBox = (box) => {
+    console.log(box);
+    this.setState({box: box});
+  }
+
   onInputChange = (event) => {
-    this.setState({input: event.target.value})
+    var value = event.target.value;
+    if (value && typeof value === 'string') {
+      this.setState({input: value.trim()})
+    }
   }
 
   onButtonSubmit = (event) => {
     this.setState({imageUrl: this.state.input})
-    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input).then(
-      function(response) {
-        console.log(response.outputs[0].data.regions[2].region_info.bounding_box);
-      },
-      function(err) {
-        // there was an error
-      }
-    );
+    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+    .then(response => this.displayFaceBox(this.calculateFaceLocation(response)))
+    .catch(err => console.err(err));
   }
 
   render() {
@@ -53,6 +73,7 @@ class App extends Component {
           onButtonSubmit={this.onButtonSubmit}
         />
         <FaceRecognition 
+          box={this.state.box}
           imageUrl={this.state.imageUrl}
         />
       </div>
