@@ -4,6 +4,8 @@ import Particles from 'react-particles-js';
 import particlesOptions from './particlesjs-config.js'
 import './App.css';
 import Navigation from './components/Navigation/Navigation.js';
+import SignIn from './components/SignIn/SignIn.js';
+import Register from './components/Register/Register.js';
 import Logo from './components/Logo/Logo.js';
 import Rank from './components/Rank/Rank.js';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm.js';
@@ -21,6 +23,7 @@ class App extends Component {
       input: '',
       imageUrl: '',
       box: {},
+      route: 'SignIn',
     }
   }
 
@@ -37,6 +40,12 @@ class App extends Component {
       rightCol: width - (clarifaiFaceBox.right_col * width),
       bottomRow: height - (clarifaiFaceBox.bottom_row * height)
     };
+  }
+
+  //method to set the route property of the state
+  onRouteChange = (route) => {
+    if (typeof route === 'string')
+      this.setState({route: route});
   }
 
   //method to set a face bounding box property on the state
@@ -65,17 +74,29 @@ class App extends Component {
         <Particles 
           className='particles'
           params={particlesOptions} />
-        <Navigation />
-        <Logo />
-        <Rank />
-        <ImageLinkForm 
-          onInputChange={this.onInputChange} 
-          onButtonSubmit={this.onButtonSubmit}
-        />
-        <FaceRecognition 
-          box={this.state.box}
-          imageUrl={this.state.imageUrl}
-        />
+        <Navigation onRouteChange={this.onRouteChange}/>
+        { 
+        this.state.route === 'home' ?
+          <div>
+            <Logo />
+            <Rank />
+            <ImageLinkForm 
+              onInputChange={this.onInputChange} 
+              onButtonSubmit={this.onButtonSubmit}
+            />
+            <FaceRecognition 
+              box={this.state.box}
+              imageUrl={this.state.imageUrl}
+            />
+          </div>
+          
+        : 
+          ( this.state.route === 'SignIn' ?
+            <SignIn onRouteChange={this.onRouteChange} />
+          :
+            <Register onRouteChange={this.onRouteChange} />
+          )
+        }
       </div>
     );
   }
