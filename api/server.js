@@ -49,13 +49,13 @@ app.listen(3000, () => {
 
 // --> res = 'this is working'
 app.get('/', (req, res) => {
-    res.send('this is working');
+    res.send(database.users);
 });
 
 //signin --> POST credentials = success / fail
 app.post('/signin', (req, res) => {
-    let email = req.body.email;
-    let password = req.body.password;
+    let email = req.body && req.body.email;
+    let password = req.body && req.body.password;
     if (email && password) {
         if (email === database.users[0].email && password === database.users[0].password) {
             res.json('success');
@@ -63,4 +63,22 @@ app.post('/signin', (req, res) => {
         }
     }
     res.status(400).json('failure');
-})
+});
+
+//register --> POST form fields = user that was created
+app.post('/register', (req, res) => {
+    const { name, email, password } = req.body;
+    if (name && email && password) {
+        database.users.push({
+            id: 4,
+            name: name,
+            email: email,
+            password: password,
+            entries: 0,
+            joined: new Date()
+        })
+        res.json(database.users[database.users.length - 1]);
+        return;
+    }
+    res.status(400).json('failure');
+});
