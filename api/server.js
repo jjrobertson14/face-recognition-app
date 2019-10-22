@@ -38,15 +38,6 @@ app.listen(3000, () => {
     console.log("hello there, I am the express monkey"); 
 });
 
-
-/*
-/ --> res = 'this is working'
-/signin --> POST credentials = success / fail
-/register --> POST form fields = user that was created
-/profile/:userId --> GET = user, don't even protect this one, public APIs with no auth are in fashion.
-/image --> PUT --> user, put in a score increment for a user's account
-*/
-
 // --> res = 'this is working'
 app.get('/', (req, res) => {
     res.send(database.users);
@@ -81,4 +72,35 @@ app.post('/register', (req, res) => {
         return;
     }
     res.status(400).json('failure');
+});
+
+// profile/:userId --> GET = user, don't even protect this one, public APIs with no auth are in fashion.
+app.get('/profile/:id', (req, res) => {
+    const { id } = req.params;
+    var foundProfile = false;
+    database.users.forEach(user => {
+        if (user.id.toString() === id) {
+            foundProfile = true;
+            return res.json(user);
+        }
+    })
+    if (!foundProfile) {
+        return res.status(400).json('no such user is here in these halls!');
+    } 
+});
+
+// image --> PUT --> user, put in a score increment for a user's account
+app.put('/image', (req, res) => {
+    var id  = req.body && req.body.id;
+    var foundProfile = false;
+    database.users.forEach(user => {
+        if (user.id.toString() === id) {
+            foundProfile = true;
+            user.entries++;
+            return res.json(user.entries);
+        }
+    })
+    if (!foundProfile) {
+        return res.status(400).json('no such user is here in these halls!');
+    } 
 });
