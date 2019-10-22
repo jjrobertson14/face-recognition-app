@@ -6,32 +6,34 @@ app.use(bodyParser.json());
 
 // testing mock
 const database = {
-    users: [
+    users: {
+        "1" : 
         {
-            id: 1,
             name: 'Johnathon',
             email: 'jrob@mail.org',
             password: 'hashed-I-swear',
             entries: 0,
             joined: new Date()
         },
+
+        "2" :
         {
-            id: 2,
             name: 'Smart Fox',
             email: 'fox@gmail.com',
             password: 'xof123gsdfgoj_+!',
             entries: 0,
             joined: new Date()
         },
+        
+        "3" :
         {
-            id: 3,
             name: 'Joey',
             email: 'joey@mail.org',
             password: 'super-hashed',
             entries: 0,
             joined: new Date()
         }
-    ]
+    }
 }
 
 app.listen(3000, () => {
@@ -77,30 +79,22 @@ app.post('/register', (req, res) => {
 // profile/:userId --> GET = user, don't even protect this one, public APIs with no auth are in fashion.
 app.get('/profile/:id', (req, res) => {
     const { id } = req.params;
-    var foundProfile = false;
-    database.users.forEach(user => {
-        if (user.id.toString() === id) {
-            foundProfile = true;
-            return res.json(user);
-        }
-    })
-    if (!foundProfile) {
+    var user = database.users[id];
+    if (user) {
+        return res.json(user);
+    } else {
         return res.status(400).json('no such user is here in these halls!');
-    } 
+    }
 });
 
 // image --> PUT --> user, put in a score increment for a user's account
 app.put('/image', (req, res) => {
     var id  = req.body && req.body.id;
-    var foundProfile = false;
-    database.users.forEach(user => {
-        if (user.id.toString() === id) {
-            foundProfile = true;
-            user.entries++;
-            return res.json(user.entries);
-        }
-    })
-    if (!foundProfile) {
+    var user = database.users[id];
+    if (user) {
+        user.entries++;
+        return res.json(user.entries);
+    } else {
         return res.status(400).json('no such user is here in these halls!');
-    } 
+    }
 });
