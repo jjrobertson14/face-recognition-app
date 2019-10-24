@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt-nodejs');
 
 const app = express();
 app.use(bodyParser.json());
@@ -33,7 +34,14 @@ const database = {
             entries: 0,
             joined: new Date()
         }
-    }
+    },
+    login: [
+        {
+            id: "2",
+            hash: "$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.",
+            email: 'fox@gmail.com'
+        }
+    ]
 }
 
 app.listen(3000, () => {
@@ -49,8 +57,17 @@ app.get('/', (req, res) => {
 app.post('/signin', (req, res) => {
     let email = req.body && req.body.email;
     let password = req.body && req.body.password;
+    
     if (email && password) {
-        if (email === database.users[0].email && password === database.users[0].password) {
+        // Load hash from your password DB.
+        bcrypt.compare("bacon", '$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.', function(err, res) {
+            console.log('first guess: ', res);
+        });
+        bcrypt.compare("veggies", '$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.', function(err, res) {
+            console.log('second guess: ', res);
+        });
+        
+        if (email === database.users["1"].email && password === database.users["1"].password) {
             res.json('success');
             return;
         }
@@ -62,15 +79,23 @@ app.post('/signin', (req, res) => {
 app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
     if (name && email && password) {
-        database.users.push({
-            id: 4,
-            name: name,
-            email: email,
-            password: password,
-            entries: 0,
-            joined: new Date()
-        })
-        res.json(database.users[database.users.length - 1]);
+        var hashedPassword = bcrypt.hash(password, null, null, function(err, hash) {
+            console.log(hash);
+            return hash;
+        });
+
+        const id = "4";
+        if (!database.users[id]) {
+            database.users[id] = {
+                id: 4,
+                name: name,
+                email: email,
+                password: hashedPassword,
+                entries: 0,
+                joined: new Date()
+            };
+        }
+        res.json(database.users[id]);
         return;
     }
     res.status(400).json('failure');
