@@ -28,6 +28,13 @@ class App extends Component {
     }
   }
 
+  // leaving in in case I want to play around with this app
+  // componentDidMount() {
+  //   fetch('http://localhost:3000')
+  //     .then(response => response.json())
+  //     .then(console.log);
+  // }
+
   // method to calculate the dimensions and position of the face bounding box
   calculateFaceLocation = (data) => {
     const clarifaiFaceBox = data.outputs[0].data.regions[0].region_info.bounding_box;

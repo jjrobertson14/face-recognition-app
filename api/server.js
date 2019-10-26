@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
+const cors = require('cors');
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 // testing mock
 const database = {
@@ -12,7 +14,7 @@ const database = {
         {
             name: 'Johnathon',
             email: 'jrob@mail.org',
-            password: 'hashed-I-swear',
+            password: 'oranges',
             entries: 0,
             joined: new Date()
         },
@@ -30,7 +32,7 @@ const database = {
         {
             name: 'Joey',
             email: 'joey@mail.org',
-            password: 'super-hashed',
+            password: 'banannas',
             entries: 0,
             joined: new Date()
         }
