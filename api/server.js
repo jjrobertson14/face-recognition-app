@@ -81,23 +81,22 @@ app.post('/signin', (req, res) => {
 app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
     if (name && email && password) {
-        var hashedPassword = bcrypt.hash(password, null, null, function(err, hash) {
-            console.log(hash);
-            return hash;
+        bcrypt.hash(password, null, null, function(err, hash) {
+            const id = "4";
+            if (!database.users[id]) {
+                database.users[id] = {
+                    id: 4,
+                    name: name,
+                    email: email,
+                    password: hash,
+                    entries: 0,
+                    joined: new Date()
+                };
+            }
+            let userNoPassword = Object.assign({}, database.users[id]);
+            delete userNoPassword.password;
+            res.json(userNoPassword);
         });
-
-        const id = "4";
-        if (!database.users[id]) {
-            database.users[id] = {
-                id: 4,
-                name: name,
-                email: email,
-                password: hashedPassword,
-                entries: 0,
-                joined: new Date()
-            };
-        }
-        res.json(database.users[id]);
         return;
     }
     res.status(400).json('failure');
