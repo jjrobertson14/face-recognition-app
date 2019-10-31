@@ -10,8 +10,9 @@ app.use(cors());
 // testing mock
 const database = {
     users: {
-        "1" : 
+        '1' : 
         {
+            id: 1,
             name: 'Johnathon',
             email: 'jrob@mail.org',
             password: 'oranges',
@@ -19,8 +20,9 @@ const database = {
             joined: new Date()
         },
 
-        "2" :
+        '2' :
         {
+            id: 2,
             name: 'Smart Fox',
             email: 'fox@gmail.com',
             password: 'xof123gsdfgoj_+!',
@@ -28,8 +30,9 @@ const database = {
             joined: new Date()
         },
         
-        "3" :
+        '3' :
         {
+            id: 3,
             name: 'Joey',
             email: 'joey@mail.org',
             password: 'banannas',
@@ -39,15 +42,15 @@ const database = {
     },
     login: [
         {
-            id: "2",
-            hash: "$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.",
+            id: '2',
+            hash: '$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.',
             email: 'fox@gmail.com'
         }
     ]
 }
 
 app.listen(3000, () => {
-    console.log("hello there, I am the express monkey"); 
+    console.log('hello there, I am the express monkey'); 
 });
 
 // --> res = 'this is working'
@@ -62,15 +65,15 @@ app.post('/signin', (req, res) => {
     
     if (email && password) {
         // Load hash from your password DB.
-        bcrypt.compare("bacon", '$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.', function(err, res) {
+        bcrypt.compare('bacon', '$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.', function(err, res) {
             console.log('first guess: ', res);
         });
-        bcrypt.compare("veggies", '$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.', function(err, res) {
+        bcrypt.compare('veggies', '$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.', function(err, res) {
             console.log('second guess: ', res);
         });
         
-        if (email === database.users["1"].email && password === database.users["1"].password) {
-            res.json('success');
+        if (email === database.users['1'].email && password === database.users['1'].password) {
+            res.json(database.users['1']);
             return;
         }
     }
@@ -82,7 +85,7 @@ app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
     if (name && email && password) {
         bcrypt.hash(password, null, null, function(err, hash) {
-            const id = "4";
+            const id = '4';
             if (!database.users[id]) {
                 database.users[id] = {
                     id: 4,
