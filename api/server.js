@@ -74,58 +74,68 @@ app.get('/', (req, res) => {
 
 //signin --> POST credentials = success / fail
 app.post('/signin', (req, res) => {
-    let email = req.body && req.body.email;
-    let password = req.body && req.body.password;
-    
-    if (email && password) {
-        // Load hash from your password DB.
-        bcrypt.compare('bacon', '$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.', function(err, res) {
-            console.log('first guess: ', res);
-        });
-        bcrypt.compare('veggies', '$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.', function(err, res) {
-            console.log('second guess: ', res);
-        });
-        
-        if (email === database.users['1'].email && password === database.users['1'].password) {
-            res.json(database.users['1']);
-            return;
-        }
-    }
-    res.status(400).json('failure');
+    const { email, password } = req.body;
+    postgres.select('email', 'hash')
+        .from('login')
+        .where('email', '=', email)
+        .then(data => {
+            bcrypt.compare(password, data[0].hash, function(err, isValid) {
+                if (err) {
+                    return err;
+                }
+                console.log(isValid);
+                if (isValid) {
+                    return postgres.select('*').from('app_user')
+                        .where('email', '=', email)
+                        .then(user => {
+                            console.log(user);
+                            res.json(user[0]);
+                        })
+                        .catch(err => res.status(400).json('user not found1'))
+                } else {
+                    res.status(400).json('user not found2')
+                }
+            });
+        })
+        .catch(err => res.status(400).json('user not found3'))
 });
 
 //register --> POST form fields = user that was created
 app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
-    postgres('app_user')
-        .returning('*')
-        .insert({name: name, email: email, join_tm: new Date()})
-        .then(user => {
-            res.json(user[0]);
-        })
-        .catch(err => res.status(400).json('unable to register'));
-    ;
-    // if (name && email && password) {
-    //     bcrypt.hash(password, null, null, function(err, hash) {
-    //         const id = '4';
-    //         if (!database.users[id]) {
-    //             database.users[id] = {
-    //                 id: 4,
-    //                 name: name,
-    //                 email: email,
-    //                 password: hash,
-    //                 entries: 0,
-    //                 joined: new Date()
-    //             };
-    //         }
-    //         let userNoPassword = Object.assign({}, database.users[id]);
-    //         delete userNoPassword.password;
-    //         res.json(userNoPassword);
-    //     });
-    //     return;
-    // }
-    // res.status(200).json('success');
-    // res.status(400).json('failure');
+    if (name && email && password) {
+        // hash password
+        bcrypt.hash(password, null, null, function(err, hash) {
+
+            // insert login record with hashed password
+            postgres.transaction(trx => { 
+                trx.insert({
+                    hash: hash, 
+                    email: email, 
+                })
+                .into('login') 
+                .returning('email') 
+                .then(loginEmail => {
+                    // insert user record
+                    return trx('app_user')
+                        .returning('*')
+                        .insert({
+                            name: name, 
+                            email: loginEmail[0], 
+                            join_tm: new Date()
+                        })
+                        .then(user => {
+                            res.json(user[0]);
+                        })
+                })
+                .then(trx.commit)
+                .catch(trx.rollback) 
+            })
+            .catch(err => res.status(400).json('unable to register user')) 
+
+        });
+        return;
+    }
 });
 
 // profile/:userId --> GET = user, don't even protect this one, public APIs with no auth are in fashion.
