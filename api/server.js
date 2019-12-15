@@ -13,7 +13,7 @@ const postgres = require('knex')({
     }
 });
 
-postgres.select('*').from('app_user').then( data => {
+postgres.select('*').from('app_user').then(data => {
     console.log(data);
 });
 
@@ -131,26 +131,27 @@ app.post('/register', (req, res) => {
 // profile/:userId --> GET = user, don't even protect this one, public APIs with no auth are in fashion.
 app.get('/profile/:id', (req, res) => {
     const { id } = req.params;
-    postgres.select('\*').from('app_user')
-    .where({id})
-    .then( user => { 
-        console.log(user);
-        if (user.length) {
-            res.json(user[0])
-        } else { 
-            res.status(400).json('no such user is here in these halls!')
-        }
-    })
+    postgres.select('*').from('app_user')
+        .where({id})
+        .then(user => { 
+            console.log(user);
+            if (user.length) {
+                res.json(user[0])
+            } else { 
+                res.status(400).json('no such user is here in these halls!')
+            }
+        })
 });
 
 // image --> PUT --> user, put in a score increment for a user's account
 app.put('/image', (req, res) => {
-    var id  = req.body && req.body.id;
-    var user = database.users[id];
-    if (user) {
-        user.entries++;
-        return res.json(user.entries);
-    } else {
-        return res.status(400).json('no such user is here in these halls!');
-    }
+    const { id } = req.body;
+    postgres('app_user').where('id', '=', id)
+        .returning('entries')
+        .increment('entries', 1)
+        .then(entries => {
+            console.log(entries);
+            res.json(entries[0]);
+        })
+        .catch(err => res.status(400).json('entries not found'));
 });
