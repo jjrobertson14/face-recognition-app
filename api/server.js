@@ -2,6 +2,20 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
+const postgres = require('knex')({
+    client: 'pg',
+    connection: {
+        host: '127.0.0.1',
+        port: '5433',
+        user: 'postgres',
+        password: '0#96rlkmLGDC5%GPXk$zLK7M',
+        database: 'face-recognition-app'
+    }
+});
+
+postgres.select('*').from('app_user').then( data => {
+    console.log(data);
+});
 
 const app = express();
 app.use(bodyParser.json());
@@ -83,26 +97,35 @@ app.post('/signin', (req, res) => {
 //register --> POST form fields = user that was created
 app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
-    if (name && email && password) {
-        bcrypt.hash(password, null, null, function(err, hash) {
-            const id = '4';
-            if (!database.users[id]) {
-                database.users[id] = {
-                    id: 4,
-                    name: name,
-                    email: email,
-                    password: hash,
-                    entries: 0,
-                    joined: new Date()
-                };
-            }
-            let userNoPassword = Object.assign({}, database.users[id]);
-            delete userNoPassword.password;
-            res.json(userNoPassword);
-        });
-        return;
-    }
-    res.status(400).json('failure');
+    postgres('app_user')
+        .returning('*')
+        .insert({name: name, email: email, join_tm: new Date()})
+        .then(user => {
+            res.json(user[0]);
+        })
+        .catch(err => res.status(400).json('unable to register'));
+    ;
+    // if (name && email && password) {
+    //     bcrypt.hash(password, null, null, function(err, hash) {
+    //         const id = '4';
+    //         if (!database.users[id]) {
+    //             database.users[id] = {
+    //                 id: 4,
+    //                 name: name,
+    //                 email: email,
+    //                 password: hash,
+    //                 entries: 0,
+    //                 joined: new Date()
+    //             };
+    //         }
+    //         let userNoPassword = Object.assign({}, database.users[id]);
+    //         delete userNoPassword.password;
+    //         res.json(userNoPassword);
+    //     });
+    //     return;
+    // }
+    // res.status(200).json('success');
+    // res.status(400).json('failure');
 });
 
 // profile/:userId --> GET = user, don't even protect this one, public APIs with no auth are in fashion.
