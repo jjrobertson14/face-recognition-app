@@ -131,12 +131,16 @@ app.post('/register', (req, res) => {
 // profile/:userId --> GET = user, don't even protect this one, public APIs with no auth are in fashion.
 app.get('/profile/:id', (req, res) => {
     const { id } = req.params;
-    var user = database.users[id];
-    if (user) {
-        return res.json(user);
-    } else {
-        return res.status(400).json('no such user is here in these halls!');
-    }
+    postgres.select('\*').from('app_user')
+    .where({id})
+    .then( user => { 
+        console.log(user);
+        if (user.length) {
+            res.json(user[0])
+        } else { 
+            res.status(400).json('no such user is here in these halls!')
+        }
+    })
 });
 
 // image --> PUT --> user, put in a score increment for a user's account
