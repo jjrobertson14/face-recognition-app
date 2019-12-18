@@ -63,7 +63,7 @@ const database = {
     ]
 }
 
-app.listen(3000, () => {
+app.listen(process.env.port || 3000, () => {
     console.log('hello there, I am the express monkey'); 
 });
 
