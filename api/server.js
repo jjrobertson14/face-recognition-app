@@ -5,11 +5,8 @@ const cors = require('cors');
 const postgres = require('knex')({
     client: 'pg',
     connection: {
-        host: '127.0.0.1',
-        port: '5433',
-        user: 'postgres',
-        password: '0#96rlkmLGDC5%GPXk$zLK7M',
-        database: 'face-recognition-app'
+        connectionString: 'process.env.DATABASE_URL',
+        ssl: true
     }
 });
 
