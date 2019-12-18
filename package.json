@@ -12,7 +12,8 @@
     "tachyons": "^4.11.1"
   },
   "scripts": {
-    "start": "set PORT=3001 && react-scripts start",
+    "start": "cd api && node server.js",
+    "start:dev": "set PORT=3001 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
