@@ -21,55 +21,13 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-// testing mock
-const database = {
-    users: {
-        '1' : 
-        {
-            id: 1,
-            name: 'Johnathon',
-            email: 'jrob@mail.org',
-            password: 'oranges',
-            entries: 0,
-            joined: new Date()
-        },
-
-        '2' :
-        {
-            id: 2,
-            name: 'Smart Fox',
-            email: 'fox@gmail.com',
-            password: 'xof123gsdfgoj_+!',
-            entries: 0,
-            joined: new Date()
-        },
-        
-        '3' :
-        {
-            id: 3,
-            name: 'Joey',
-            email: 'joey@mail.org',
-            password: 'banannas',
-            entries: 0,
-            joined: new Date()
-        }
-    },
-    login: [
-        {
-            id: '2',
-            hash: '$2a$10$06WzW2vu16Fswij/gw6wRO.saffScPbZigDpaEdgAEdsjHlcgUod.',
-            email: 'fox@gmail.com'
-        }
-    ]
-}
-
 app.listen(process.env.port || 3000, () => {
     console.log('hello there, I am the express monkey'); 
 });
 
 // --> res = 'this is working'
 app.get('/', (req, res) => {
-    res.send(database.users);
+    res.send("got slash");
 });
 
 //signin --> POST credentials = success / fail
