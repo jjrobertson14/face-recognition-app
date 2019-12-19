@@ -59,7 +59,7 @@ server.post('/signin', (req, res) => {
 });
 
 //register --> POST form fields = user that was created
-app.post('/register', (req, res) => {
+server.post('/register', (req, res) => {
     const { name, email, password } = req.body;
     if (name && email && password) {
         // hash password
@@ -97,7 +97,7 @@ app.post('/register', (req, res) => {
 });
 
 // profile/:userId --> GET = user, don't even protect this one, public APIs with no auth are in fashion.
-app.get('/profile/:id', (req, res) => {
+server.get('/profile/:id', (req, res) => {
     const { id } = req.params;
     postgres.select('*').from('app_user')
         .where({id})
@@ -112,7 +112,7 @@ app.get('/profile/:id', (req, res) => {
 });
 
 // image --> PUT --> user, put in a score increment for a user's account
-app.put('/image', (req, res) => {
+server.put('/image', (req, res) => {
     const { id } = req.body;
     postgres('app_user').where('id', '=', id)
         .returning('entries')
