@@ -5,7 +5,7 @@ const cors = require('cors');
 const postgres = require('knex')({
     client: 'pg',
     connection: {
-        connectionString: 'process.env.DATABASE_URL',
+        connectionString: process.env.DATABASE_URL,
         ssl: true
     }
 });
@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.listen(process.env.port || 3000, () => {
+    console.log(process.env);
     console.log('hello there, I am the express monkey'); 
 });
 
