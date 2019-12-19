@@ -25,7 +25,7 @@ class Register extends Component {
 
     onSubmitRegister = () => {
         console.log("submitting Register info");
-        fetch('http://localhost:3000/register', {
+        fetch('https://face-recognition-app-0103.herokuapp.com/register', {
           method: 'post',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({

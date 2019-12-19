@@ -13,7 +13,7 @@ import FaceRecognition from './components/FaceRecognition/FaceRecognition.js';
 import Clarifai from 'clarifai';
 
 const app = new Clarifai.App({
-  apiKey: '8e1cd203cf7c44e29fdf2849cf330ba4',
+  apiKey: process.env.CLARIFAI_API_KEY,
 });
 
 class App extends Component {
@@ -36,7 +36,7 @@ class App extends Component {
 
   // leaving in in case I want to play around with this app
   // componentDidMount() {
-  //   fetch('http://localhost:3000')
+  //   fetch('https://face-recognition-app-0103.herokuapp.com/')
   //     .then(response => response.json())
   //     .then(console.log);
   // }
@@ -100,7 +100,7 @@ class App extends Component {
     .then(response => {
       this.displayFaceBox(this.calculateFaceLocation(response));
       // update the user's entry count to reflect this submission
-      fetch('http://localhost:3000/image', {
+      fetch('https://face-recognition-app-0103.herokuapp.com/image', {
         method: 'put',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
