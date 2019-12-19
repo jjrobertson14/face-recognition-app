@@ -1,4 +1,7 @@
 const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
@@ -14,22 +17,21 @@ postgres.select('*').from('app_user').then(data => {
     console.log(data);
 });
 
-const app = express();
-app.use(bodyParser.json());
-app.use(cors());
+server.use(bodyParser.json());
+server.use(cors());
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log(process.env);
+io.on('connection', () => { /* … */ });
+server.listen(process.env.PORT || 3000, () => {
     console.log('hello there, I am the express monkey'); 
 });
 
 // --> res = 'this is working'
-app.get('/', (req, res) => {
+server.get('/', (req, res) => {
     res.send("got slash");
 });
 
 //signin --> POST credentials = success / fail
-app.post('/signin', (req, res) => {
+server.post('/signin', (req, res) => {
     const { email, password } = req.body;
     postgres.select('email', 'hash')
         .from('login')
