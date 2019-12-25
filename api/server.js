@@ -17,21 +17,21 @@ postgres.select('*').from('app_user').then(data => {
     console.log(data);
 });
 
-server.use(bodyParser.json());
-server.use(cors());
-
 io.on('connection', () => { /* … */ });
 server.listen(process.env.PORT || 3000, () => {
     console.log('hello there, I am the express monkey'); 
 });
 
+app.use(bodyParser.json());
+app.use(cors());
+
 // --> res = 'this is working'
-server.get('/', (req, res) => {
+app.get('/', (req, res) => {
     res.send("got slash");
 });
 
 //signin --> POST credentials = success / fail
-server.post('/signin', (req, res) => {
+app.post('/signin', (req, res) => {
     const { email, password } = req.body;
     postgres.select('email', 'hash')
         .from('login')
@@ -59,7 +59,7 @@ server.post('/signin', (req, res) => {
 });
 
 //register --> POST form fields = user that was created
-server.post('/register', (req, res) => {
+app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
     if (name && email && password) {
         // hash password
@@ -97,7 +97,7 @@ server.post('/register', (req, res) => {
 });
 
 // profile/:userId --> GET = user, don't even protect this one, public APIs with no auth are in fashion.
-server.get('/profile/:id', (req, res) => {
+app.get('/profile/:id', (req, res) => {
     const { id } = req.params;
     postgres.select('*').from('app_user')
         .where({id})
@@ -112,7 +112,7 @@ server.get('/profile/:id', (req, res) => {
 });
 
 // image --> PUT --> user, put in a score increment for a user's account
-server.put('/image', (req, res) => {
+app.put('/image', (req, res) => {
     const { id } = req.body;
     postgres('app_user').where('id', '=', id)
         .returning('entries')
