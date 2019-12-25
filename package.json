@@ -15,7 +15,7 @@
   },
   "scripts": {
     "postinstall": "npm install --prefix api",
-    "start": "react-scripts start && npm start --prefix api",
+    "start": "npm start && npm start --prefix api",
     "start:dev": "set PORT=3001 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
